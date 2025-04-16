@@ -4,24 +4,33 @@ import { useState } from 'react';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { ScrollView } from 'react-native-gesture-handler';
+import getMessResponse from '@/services/get-mess-response';
 
 export default function ChatScreen() {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([
-    { id: 1, text: 'Welcome to Arabic Bible Chat!', isUser: false },
+    { id: 1, text: 'مرحبا! لنتحدث عن الكتاب المقدس', isUser: false },
   ]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (message.trim()) {
+      console.log(message)
       setMessages([...messages, { id: Date.now(), text: message, isUser: true }]);
-      setMessage('');
+      // setMessage('');
       // Add default response
-      setTimeout(() => {
-        setMessages(prev => [
-          ...prev,
-          { id: Date.now(), text: 'Thank you for your message. I will respond shortly.', isUser: false }
-        ]);
-      }, 1000);
+      // setTimeout(() => {
+      //   setMessages(prev => [
+      //     ...prev,
+      //     { id: Date.now(), text: 'Thank you for your message. I will respond shortly.', isUser: false }
+      //   ]);
+      // }, 1000);
+      const data = await getMessResponse(message)
+      setMessage(`(${JSON.stringify(data)})`)
+      setMessages(prev => [
+        ...prev,
+        { id: Date.now(), text: `${data.message} + ${data.success}`, isUser: false }
+      ]);
     }
   };
 
@@ -34,17 +43,22 @@ export default function ChatScreen() {
         <ThemedText type="title">Arabic Bible Chat</ThemedText>
       </ThemedView>
 
+      {/* Messages */}
       <ThemedView style={styles.messagesContainer}>
-        {messages.map(msg => (
-          <View
-            key={msg.id}
-            style={[styles.messageBubble, msg.isUser ? styles.userMessage : styles.botMessage]}
-          >
-            <ThemedText style={styles.messageText}>{msg.text}</ThemedText>
-          </View>
-        ))}
+        <ScrollView>
+          {messages.map(msg => (
+            <View
+              key={msg.id}
+              style={[styles.messageBubble, msg.isUser ? styles.userMessage : styles.botMessage]}
+            >
+              <ThemedText style={styles.messageText}>{msg.text}</ThemedText>
+            </View>
+          ))}
+        </ScrollView>
       </ThemedView>
+      
 
+      {/* Input */}
       <ThemedView style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -54,8 +68,10 @@ export default function ChatScreen() {
           placeholderTextColor="#666"
           multiline
         />
-        <View 
-          onTouchStart={handleSend} 
+        <Button 
+          onPress={handleSend} 
+          title='Send'
+          
           style={{
             backgroundColor: 'blue',
             padding: 8,
@@ -65,16 +81,8 @@ export default function ChatScreen() {
             justifyContent: 'center',
             gap: 8
           }}
-        >
-          <IconSymbol
-            size={24}
-            name="arrow.up.circle.fill"
-            color="#fff"
-            onPress={handleSend}
-            style={styles.sendButton}
-          />
-          <ThemedText style={{color: '#fff'}}>Send</ThemedText>
-        </View>
+        />
+          
       </ThemedView>
     </KeyboardAvoidingView>
   );
