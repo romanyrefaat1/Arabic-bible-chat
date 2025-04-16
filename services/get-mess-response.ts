@@ -1,6 +1,6 @@
 export default async function getMessResponse (query: string){
     
-    const response = await fetch(`http://localhost:3000` + '/api/end-mess-response', 
+    const response = await fetch(`http://http://localhost:3000` + '/api/end-mess-response', 
     {
         method: 'POST',
         headers: {

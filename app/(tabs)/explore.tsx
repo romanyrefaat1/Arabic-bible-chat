@@ -29,7 +29,7 @@ export default function ChatScreen() {
       setMessage(`(${JSON.stringify(data)})`)
       setMessages(prev => [
         ...prev,
-        { id: Date.now(), text: `${data.message} + ${data.success}`, isUser: false }
+        { id: Date.now(), text: `${data.message} + ${data.success} + ${data.similarBibleVerses?.[0]?.verse?.text || ``}`, isUser: false }
       ]);
     }
   };
